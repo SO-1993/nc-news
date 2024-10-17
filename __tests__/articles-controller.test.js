@@ -96,7 +96,7 @@ describe("GET /api/articles/:article_id", () => {
       .get(`/api/articles/${invalidArticleId}`)
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Route not found");
+        expect(response.body.msg).toBe("Article not found");
       });
   });
 

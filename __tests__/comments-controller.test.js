@@ -61,7 +61,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/999999/comments")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Route not found");
+        expect(response.body.msg).toBe("Article not found");
       });
   });
 });
@@ -104,15 +104,77 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 
   test("should respond with a 400 status code when the username is missing ", () => {
-    const invalidComment = {
-      username: "butter_bridge",
-    };
+    const invalidComment = {};
     return request(app)
       .post("/api/articles/1/comments")
       .send(invalidComment)
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad request: Missing required fields");
+      });
+  });
+
+  test("should respond with a 400 status code when the username is missing ", () => {
+    const newComment = {
+      username: "unknown user",
+      body: "This is a test message!",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Username not found");
+      });
+  });
+});
+
+test("should respond with a 404 status code when article ID does not exist", () => {
+  const newComment = {
+    username: "butter_bridge",
+    body: "This is a test message!",
+  };
+  return request(app)
+    .get("/api/articles/999999/comments")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe("Article not found");
+    });
+});
+
+/////////////////////// DELETE /api/comments/:comment_id TESTS  ///////////////////////
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("should respond with a 204 status code and no content when comment is successfully deleted", () => {
+    const validCommentId = 1;
+
+    return request(app)
+      .delete(`/api/comments/${validCommentId}`)
+      .expect(204)
+      .then((response) => {
+        expect(response.body).toEqual({});
+      });
+  });
+
+  test("should respond with a 400 status code when comment_id is not a number", () => {
+    const invalidCommentId = "invalid_comment_id";
+
+    return request(app)
+      .delete(`/api/comments/${invalidCommentId}`)
+      .expect(400)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Invalid input" });
+      });
+  });
+
+  test("should respond with a 404 status code when comment_id does not exist", () => {
+    const nonExistentCommentId = 9999999;
+
+    return request(app)
+      .delete(`/api/comments/${nonExistentCommentId}`)
+      .expect(404)
+      .then((response) => {
+        expect(response.body).toEqual({ msg: "Article not found" });
       });
   });
 });
