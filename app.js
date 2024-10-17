@@ -14,14 +14,20 @@ const {
   getCommentsByArticleId,
   postCommentsByArticleId,
 } = require("./controllers/comments-controller");
+const { updateArticleById } = require("./controllers/articles-controller");
 
-// routing
+// GET routing
 app.get("/api/topics", getTopics);
 app.get("/api", getApiEndpoints);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+// POST routing
 app.post("/api/articles/:article_id/comments", postCommentsByArticleId);
+
+// PATCH routing
+app.patch("/api/articles/:article_id", updateArticleById);
 
 // error-handling middleware
 

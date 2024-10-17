@@ -1,6 +1,7 @@
 const {
   fetchArticles,
   fetchArticleById,
+  updateArticleById,
 } = require("../models/articles-models");
 
 // getArticles()
@@ -25,21 +26,14 @@ exports.getArticleById = (req, res, next) => {
     .catch(next);
 };
 
-// // getArticlesByID()
-// exports.getArticleById = (req, res, next) => {
-//   const { article_id } = req.params;
+// updateArticleById()
+exports.updateArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  const { inc_votes } = req.body;
 
-//   fetchArticleById(article_id)
-//     .then((article) => {
-//       if (!article) {
-//         // Explicitly create an error for article not found
-//         const err = new Error("Article not found");
-//         err.status = 404;
-//         err.msg = "Article not found"; // Set message for error handler
-//         next(err); // Pass to the next error handler
-//       } else {
-//         res.status(200).send({ article });
-//       }
-//     })
-//     .catch(next); // Pass any other errors to the error handler
-// };
+  updateArticleById(article_id, inc_votes)
+    .then((updatedArticle) => {
+      res.status(200).send({ article: updatedArticle });
+    })
+    .catch(next);
+};

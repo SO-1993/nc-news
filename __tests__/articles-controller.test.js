@@ -10,6 +10,8 @@ afterAll(() => {
   return db.end();
 });
 
+/////////////////////// GET /api/articles TESTS  ///////////////////////
+
 describe("GET /api/articles", () => {
   test("should respond with a 200 status code, have the specified properties, and return the correct number of articles", () => {
     return request(app)
@@ -31,6 +33,8 @@ describe("GET /api/articles", () => {
       });
   });
 });
+
+/////////////////////// GET /api/articles/:article_id TESTS  ///////////////////////
 
 describe("GET /api/articles/:article_id", () => {
   test("should respond with a 200 status code and with the correct article_id", () => {
@@ -68,7 +72,7 @@ describe("GET /api/articles/:article_id", () => {
         );
         expect(response.body.article).toHaveProperty(
           "created_at",
-          expect.any(String) // WHAT IS HAPPENING HERE? In the data, created_at is a number (e.g. created_at: 1589418120000) but to pass the test I have to expect a string???
+          expect.any(String)
         );
         expect(response.body.article).toHaveProperty(
           "votes",
@@ -86,7 +90,6 @@ describe("GET /api/articles/:article_id", () => {
       });
   });
 
-  // FAILING TEST
   test("should respond with a 404 status when the article ID does not exist", () => {
     const invalidArticleId = 111;
     return request(app)
@@ -103,6 +106,82 @@ describe("GET /api/articles/:article_id", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Route not found");
+      });
+  });
+});
+
+/////////////////////// PATCH /api/articles/:article_id TESTS  ///////////////////////
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("should respond with a 200 status status code and the updated article when inc_votes is valid", () => {
+    const validArticleId = 1;
+    const newVote = { inc_votes: 1 };
+    return request(app)
+      .patch(`/api/articles/${validArticleId}`)
+      .send(newVote)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toHaveProperty("votes");
+        expect(article.votes).toBeGreaterThan(0);
+      });
+  });
+
+  test("should respond with a 200 status code and increment the article's votes", () => {
+    const validArticleId = 1;
+    const incVote = { inc_votes: 5 };
+
+    return request(app)
+      .patch(`/api/articles/${validArticleId}`)
+      .send(incVote)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toHaveProperty("votes");
+        expect(article.votes).toBe(105);
+      });
+  });
+
+  test("should respond with a 200 status code and decrement the article's votes", () => {
+    const validArticleId = 1;
+    const incVote = { inc_votes: -10 };
+
+    return request(app)
+      .patch(`/api/articles/${validArticleId}`)
+      .send(incVote)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toHaveProperty("votes");
+        expect(article.votes).toBe(90);
+      });
+  });
+
+  test("should not go below zero, regardless of number of negative votes", () => {
+    const validArticleId = 2;
+    const incVote = { inc_votes: -100 };
+
+    return request(app)
+      .patch(`/api/articles/${validArticleId}`)
+      .send(incVote)
+      .expect(200)
+      .then((response) => {
+        const { article } = response.body;
+        expect(article).toHaveProperty("votes");
+        expect(article.votes).toBe(0);
+      });
+  });
+
+  test("should respond with a 400 status code when inc_votes is not a number", () => {
+    const validArticleId = 1;
+    const invalidIncVote = { inc_votes: "invalid" };
+
+    return request(app)
+      .patch(`/api/articles/${validArticleId}`)
+      .send(invalidIncVote)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid input");
       });
   });
 });
