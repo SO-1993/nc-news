@@ -18,6 +18,7 @@ const { updateArticleById } = require("./controllers/articles-controller");
 const {
   deleteCommentByCommentId,
 } = require("./controllers/comments-controller");
+const { getUsers } = require("./controllers/users-controller");
 
 // GET routing
 app.get("/api/topics", getTopics);
@@ -25,6 +26,7 @@ app.get("/api", getApiEndpoints);
 app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+app.get("/api/users", getUsers);
 
 // POST routing
 app.post("/api/articles/:article_id/comments", postCommentsByArticleId);
