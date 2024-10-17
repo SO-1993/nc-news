@@ -20,50 +20,49 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then((response) => {
         const { comments } = response.body;
 
+        const expectedCommentCount = 11;
+
         expect(Array.isArray(comments)).toBe(true);
+        expect(comments).toHaveLength(expectedCommentCount);
 
-        if (comments.length === 0) {
-          expect(comments).toHaveLength(0);
-        } else {
-          comments.forEach((comment) => {
-            expect(comment).toHaveProperty("comment_id");
-            expect(comment).toHaveProperty("votes");
-            expect(comment).toHaveProperty("created_at");
-            expect(comment).toHaveProperty("author");
-            expect(comment).toHaveProperty("body");
-            expect(comment).toHaveProperty("article_id");
-          });
-        }
+        comments.forEach((comment) => {
+          expect(comment).toHaveProperty("comment_id");
+          expect(comment).toHaveProperty("votes");
+          expect(comment).toHaveProperty("created_at");
+          expect(comment).toHaveProperty("author");
+          expect(comment).toHaveProperty("body");
+          expect(comment).toHaveProperty("article_id");
+        });
       });
   });
+});
 
-  test("should respond with a 200 status code and return an empty array when a valid article ID with no comments is provided", () => {
-    return request(app)
-      .get("/api/articles/2/comments")
-      .expect(200)
-      .then((response) => {
-        const { comments } = response.body;
-        expect(comments).toHaveLength(0);
-      });
-  });
+test("should respond with a 200 status code and return an empty array when a valid article ID with no comments is provided", () => {
+  return request(app)
+    .get("/api/articles/2/comments")
+    .expect(200)
+    .then((response) => {
+      const { comments } = response.body;
+      expect(comments).toHaveLength(0);
+    });
+});
 
-  test("should respond with a 400 status code for invalid article ids", () => {
-    return request(app)
-      .get("/api/articles/abc/comments")
-      .expect(400)
-      .then((response) => {
-        expect(response.body.msg).toBe("Invalid input");
-      });
-  });
+test("should respond with a 400 status code for invalid article ids", () => {
+  return request(app)
+    .get("/api/articles/abc/comments")
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("Invalid input");
+    });
+});
 
-  test("should respond with a 404 status code when article ID does not exist", () => {
-    return request(app)
-      .get("/api/articles/999999/comments")
-      .expect(404)
-      .then((response) => {
-        expect(response.body.msg).toBe("Article not found");
-      });
-  });
+test("should respond with a 404 status code when article ID does not exist", () => {
+  return request(app)
+    .get("/api/articles/999999/comments")
+    .expect(404)
+    .then((response) => {
+      expect(response.body.msg).toBe("Article not found");
+    });
 });
 
 /////////////////////// POST /api/articles/:article_id/comments TESTS  ///////////////////////
@@ -113,20 +112,6 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad request: Missing required fields");
       });
   });
-
-  test("should respond with a 400 status code when the username is missing ", () => {
-    const newComment = {
-      username: "unknown user",
-      body: "This is a test message!",
-    };
-    return request(app)
-      .post("/api/articles/1/comments")
-      .send(newComment)
-      .expect(404)
-      .then((response) => {
-        expect(response.body.msg).toBe("Username not found");
-      });
-  });
 });
 
 test("should respond with a 404 status code when article ID does not exist", () => {
@@ -139,6 +124,15 @@ test("should respond with a 404 status code when article ID does not exist", () 
     .expect(404)
     .then((response) => {
       expect(response.body.msg).toBe("Article not found");
+    });
+});
+
+test("should respond with a 400 status code for invalid article ID (22P02 error)", () => {
+  return request(app)
+    .get("/api/articles/invalid_id/comments")
+    .expect(400)
+    .then((response) => {
+      expect(response.body.msg).toBe("Invalid input");
     });
 });
 

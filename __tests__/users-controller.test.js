@@ -44,7 +44,7 @@ describe.only("GET /api/users", () => {
         .get("/api/doesnotexist")
         .expect(404)
         .then((response) => {
-          expect(response.body.msg).toBe("");
+          expect(response.body.msg).toBe("Route not found");
         });
     });
   });

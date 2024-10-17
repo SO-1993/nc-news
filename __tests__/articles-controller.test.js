@@ -3,6 +3,7 @@ const app = require("../app.js");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed.js");
 const data = require("../db/data/test-data/index.js");
+require("jest-sorted");
 
 beforeEach(() => seed(data));
 
@@ -18,18 +19,22 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then((response) => {
-        expect(Array.isArray(response.body)).toBe(true);
+        const { articles } = response.body;
 
-        expect(response.body[0]).toHaveProperty("author");
-        expect(response.body[0]).toHaveProperty("title");
-        expect(response.body[0]).toHaveProperty("article_id");
-        expect(response.body[0]).toHaveProperty("topic");
-        expect(response.body[0]).toHaveProperty("created_at");
-        expect(response.body[0]).toHaveProperty("votes");
-        expect(response.body[0]).toHaveProperty("article_img_url");
-        expect(response.body[0]).toHaveProperty("comment_count");
+        expect(Array.isArray(articles)).toBe(true);
 
-        expect(response.body.length).toBe(13);
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+
+        expect(articles.length).toBe(13);
       });
   });
 });
@@ -182,6 +187,69 @@ describe("PATCH /api/articles/:article_id", () => {
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Invalid input");
+      });
+  });
+});
+
+/////////////////////// GET /api/articles TESTS (sorting queries) ///////////////////////
+
+describe("GET /api/articles", () => {
+  test("should return a 200 status code and an array of article objects, sorted by date (created_at) in descending order by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+
+        expect(articles[0]).toHaveProperty("author");
+        expect(articles[0]).toHaveProperty("title");
+        expect(articles[0]).toHaveProperty("article_id");
+        expect(articles[0]).toHaveProperty("topic");
+        expect(articles[0]).toHaveProperty("created_at");
+        expect(articles[0]).toHaveProperty("votes");
+      });
+  });
+
+  test("should return a 200 status code and an array of article objects, sorted by date (created_at) in descending order if specified", () => {
+    return request(app)
+      .get("/api/articles?order=desc")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+
+  test("should return a 200 status code and an array of article objects, sorted by date (created_at) in ascending order if specified", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        expect(articles).toBeSortedBy("created_at", { ascending: true });
+      });
+  });
+
+  test("should return a 400 status code when given an invalid sort_by column", () => {
+    return request(app)
+      .get("/api/articles?sort_by=invalid_column")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid sort column");
+      });
+  });
+
+  test("should return a 400 status code when given an invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=not_asc_or_desc")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid order query");
       });
   });
 });
