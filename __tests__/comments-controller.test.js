@@ -10,6 +10,8 @@ afterAll(() => {
   return db.end();
 });
 
+/////////////////////// GET /api/articles/:article_id/comments TESTS  ///////////////////////
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("should respond with a 200 status code and return an array of comments when a valid article ID is provided", () => {
     return request(app)
@@ -63,6 +65,8 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+/////////////////////// POST /api/articles/:article_id/comments TESTS  ///////////////////////
 
 describe("POST /api/articles/:article_id/comments", () => {
   test("should respond with a 201 status code when passed a valid username and article ID", () => {

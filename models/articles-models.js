@@ -1,6 +1,30 @@
 const db = require("../db/connection");
 
-// fetchArticleById() in articles-model.js
+// fetchArticles()
+exports.fetchArticles = () => {
+  return db
+    .query(
+      `SELECT
+        articles.author,
+        articles.title,
+        articles.article_id,
+        articles.topic,
+        articles.created_at,
+        articles.votes,
+        articles.article_img_url,
+        COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments
+      ON articles.article_id = comments.article_id
+      GROUP BY articles.article_id
+      ORDER BY articles.created_at DESC`
+    )
+    .then(({ rows }) => {
+      return rows; // success response
+    });
+};
+
+// fetchArticleById()
 exports.fetchArticleById = (article_id) => {
   return db
     .query(
@@ -27,26 +51,18 @@ exports.fetchArticleById = (article_id) => {
       return rows[0]; // success response
     });
 };
-
-exports.fetchArticles = () => {
+exports.updateArticleById = (article_id, inc_votes) => {
   return db
     .query(
-      `SELECT
-        articles.author,
-        articles.title,
-        articles.article_id,
-        articles.topic,
-        articles.created_at,
-        articles.votes,
-        articles.article_img_url,
-        COUNT(comments.comment_id) AS comment_count
-      FROM articles
-      LEFT JOIN comments
-      ON articles.article_id = comments.article_id
-      GROUP BY articles.article_id
-      ORDER BY articles.created_at DESC`
+      `
+      UPDATE articles
+      SET votes = GREATEST(votes + $1, 0)
+      WHERE article_id = $2
+      RETURNING *;
+    `,
+      [inc_votes, article_id]
     )
     .then(({ rows }) => {
-      return rows; // success response
+      return rows[0]; // return the updated article
     });
 };
