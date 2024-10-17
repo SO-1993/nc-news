@@ -10,7 +10,7 @@ afterAll(() => {
   return db.end();
 });
 
-xdescribe("GET /api", () => {
+describe("GET /api", () => {
   test("should respond with a 200 status and available endpoints", () => {
     return request(app)
       .get("/api")

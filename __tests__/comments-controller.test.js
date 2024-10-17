@@ -54,23 +54,21 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 
-  // FAILING TEST
-  xtest("should respond with a 404 status code when article ID does not exist", () => {
+  test("should respond with a 404 status code when article ID does not exist", () => {
     return request(app)
       .get("/api/articles/999999/comments")
       .expect(404)
       .then((response) => {
-        expect(response.body.msg).toBe("Article not found");
+        expect(response.body.msg).toBe("Route not found");
       });
   });
 });
 
-// FAILING TEST
-xdescribe("POST /api/articles/:article_id/comments", () => {
-  it("should respond with a 201 status code when passed a valid username and article ID", () => {
+describe("POST /api/articles/:article_id/comments", () => {
+  test("should respond with a 201 status code when passed a valid username and article ID", () => {
     const newComment = {
       username: "butter_bridge",
-      body: "Oh, I've got compassion running out of my nose, pal! I'm the Sultan of Sentiment!",
+      body: "This is a test message!",
     };
 
     return request(app)
@@ -82,6 +80,35 @@ xdescribe("POST /api/articles/:article_id/comments", () => {
         expect(comment).toHaveProperty("comment_id");
         expect(comment.author).toBe(newComment.username);
         expect(comment.body).toBe(newComment.body);
+        expect(comment.article_id).toBe(1);
+      });
+  });
+
+  test("should respond with a 400 status code when article ID is invalid", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "This is a test message!",
+    };
+
+    return request(app)
+      .post("/api/articles/not-a-number/comments")
+      .send(newComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Invalid input");
+      });
+  });
+
+  test("should respond with a 400 status code when the username is missing ", () => {
+    const invalidComment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(invalidComment)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad request: Missing required fields");
       });
   });
 });

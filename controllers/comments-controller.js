@@ -21,6 +21,12 @@ exports.postCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const { username, body } = req.body;
 
+  if (!username || !body) {
+    return res
+      .status(400)
+      .send({ msg: "Bad request: Missing required fields" });
+  }
+
   createCommentForArticle(article_id, username, body)
     .then((newComment) => {
       res.status(201).send({ comment: newComment });

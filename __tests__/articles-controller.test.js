@@ -87,7 +87,7 @@ describe("GET /api/articles/:article_id", () => {
   });
 
   // FAILING TEST
-  xtest("should respond with a 404 status when the article ID does not exist", () => {
+  test("should respond with a 404 status when the article ID does not exist", () => {
     const invalidArticleId = 111;
     return request(app)
       .get(`/api/articles/${invalidArticleId}`)

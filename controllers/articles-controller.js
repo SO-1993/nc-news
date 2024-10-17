@@ -20,15 +20,26 @@ exports.getArticleById = (req, res, next) => {
 
   fetchArticleById(article_id)
     .then((article) => {
-      if (!article) {
-        // Explicitly create an error for article not found
-        const err = new Error("Article not found");
-        err.status = 404;
-        err.msg = "Article not found"; // Set message for error handler
-        next(err); // Pass to the next error handler
-      } else {
-        res.status(200).send({ article });
-      }
+      res.status(200).send({ article });
     })
-    .catch(next); // Pass any other errors to the error handler
+    .catch(next);
 };
+
+// // getArticlesByID()
+// exports.getArticleById = (req, res, next) => {
+//   const { article_id } = req.params;
+
+//   fetchArticleById(article_id)
+//     .then((article) => {
+//       if (!article) {
+//         // Explicitly create an error for article not found
+//         const err = new Error("Article not found");
+//         err.status = 404;
+//         err.msg = "Article not found"; // Set message for error handler
+//         next(err); // Pass to the next error handler
+//       } else {
+//         res.status(200).send({ article });
+//       }
+//     })
+//     .catch(next); // Pass any other errors to the error handler
+// };
