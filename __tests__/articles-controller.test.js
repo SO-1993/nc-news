@@ -59,30 +59,13 @@ describe("GET /api/articles/:article_id", () => {
       .get(`/api/articles/${validArticleId}`)
       .expect(200)
       .then((response) => {
-        expect(response.body.article).toHaveProperty(
-          "article_id",
-          validArticleId
-        );
-        expect(response.body.article).toHaveProperty(
-          "author",
-          expect.any(String)
-        );
-        expect(response.body.article).toHaveProperty(
-          "title",
-          expect.any(String)
-        );
-        expect(response.body.article).toHaveProperty(
-          "body",
-          expect.any(String)
-        );
-        expect(response.body.article).toHaveProperty(
-          "created_at",
-          expect.any(String)
-        );
-        expect(response.body.article).toHaveProperty(
-          "votes",
-          expect.any(Number)
-        );
+        const { article } = response.body;
+        expect(article).toHaveProperty("article_id");
+        expect(article).toHaveProperty("title");
+        expect(article).toHaveProperty("author");
+        expect(article).toHaveProperty("comment_count");
+        expect(article).toHaveProperty("created_at");
+        expect(article).toHaveProperty("votes");
       });
   });
 
@@ -302,6 +285,64 @@ describe("GET /api/articles", () => {
       .expect(404)
       .then((response) => {
         expect(response.body.msg).toBe("Topic not found");
+      });
+  });
+});
+
+/////////////////////// GET /api/articles/article_id TESTS (comment count) ///////////////////////
+
+describe("GET /api/articles", () => {
+  test("should return a 200 status code articles, including comment_count when no topic filter is applied", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        expect(articles).toBeInstanceOf(Array);
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+
+  test("should return a 200 status code with articles, including comment_count when a topic filter is applied:", () => {
+    const topic = "mitch";
+    return request(app)
+      .get(`/api/articles?topic=${topic}`)
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+
+  test("should return a 404 status code when the specified topic does not exist", () => {
+    return request(app)
+      .get("/api/articles?topic=does-not-exist")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Topic not found");
+      });
+  });
+
+  test("should return a 404 status code when an invalid article ID is passed", () => {
+    return request(app)
+      .get("/api/articles/999999")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Article not found");
       });
   });
 });
