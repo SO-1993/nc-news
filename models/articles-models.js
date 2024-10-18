@@ -1,7 +1,7 @@
 const db = require("../db/connection");
 
 // fetchArticles()
-exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+exports.fetchArticles = (sort_by = "created_at", order = "desc", topic) => {
   const validSortColumns = [
     "author",
     "title",
@@ -11,14 +11,16 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
     "votes",
     "article_img_url",
   ];
+
   if (!validSortColumns.includes(sort_by)) {
     return Promise.reject({ status: 400, msg: "Invalid sort column" });
   }
+
   if (!["asc", "desc"].includes(order)) {
     return Promise.reject({ status: 400, msg: "Invalid order query" });
   }
 
-  const queryStr = `
+  let queryStr = `
     SELECT 
       articles.author, 
       articles.title, 
@@ -30,11 +32,35 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
       COUNT(comments.comment_id) AS comment_count 
     FROM articles
     LEFT JOIN comments 
-    ON articles.article_id = comments.article_id 
-    GROUP BY articles.article_id 
+    ON articles.article_id = comments.article_id`;
+
+  const queryValues = [];
+
+  if (topic) {
+    return db
+      .query("SELECT * FROM topics WHERE slug = $1", [topic])
+      .then((result) => {
+        if (result.rows.length === 0) {
+          return Promise.reject({ status: 404, msg: "Topic not found" });
+        }
+
+        queryStr += ` WHERE articles.topic = $1`;
+        queryValues.push(topic);
+
+        queryStr += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`;
+
+        return db.query(queryStr, queryValues).then(({ rows }) => rows);
+      })
+      .catch((err) => {
+        return Promise.reject(err);
+      });
+  } else {
+    queryStr += `
+    GROUP BY articles.article_id
     ORDER BY ${sort_by} ${order}`;
 
-  return db.query(queryStr).then(({ rows }) => rows);
+    return db.query(queryStr, queryValues).then(({ rows }) => rows);
+  }
 };
 
 // fetchArticleById()
@@ -61,7 +87,7 @@ exports.fetchArticleById = (article_id) => {
           status: 404,
         });
       }
-      return rows[0]; // success response
+      return rows[0];
     });
 };
 exports.updateArticleById = (article_id, inc_votes) => {
@@ -76,6 +102,6 @@ exports.updateArticleById = (article_id, inc_votes) => {
       [inc_votes, article_id]
     )
     .then(({ rows }) => {
-      return rows[0]; // return the updated article
+      return rows[0];
     });
 };
