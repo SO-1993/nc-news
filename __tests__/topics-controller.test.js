@@ -10,7 +10,7 @@ afterAll(() => {
   return db.end();
 });
 
-// helper function
+// helper function //
 const checkTopicProperties = (topic) => {
   expect(topic).toHaveProperty("slug", expect.any(String));
   expect(topic).toHaveProperty("description", expect.any(String));

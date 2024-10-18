@@ -136,7 +136,7 @@ test("should respond with a 400 status code for invalid article ID (22P02 error)
     });
 });
 
-/////////////////////// DELETE /api/comments/:comment_id TESTS  ///////////////////////
+/////////////////////// DELETE /api/comments/:comment_id TESTS  /////////////////////
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("should respond with a 204 status code and no content when comment is successfully deleted", () => {

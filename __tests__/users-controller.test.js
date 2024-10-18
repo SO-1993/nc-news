@@ -17,7 +17,7 @@ const checkUserProperties = (user) => {
   expect(user).toHaveProperty("avatar_url", expect.any(String));
 };
 
-/////////////////////// GET /api/users TESTS  ///////////////////////
+/////////////////////// GET /api/users TESTS  /////////////////////
 
 describe.only("GET /api/users", () => {
   test("should respond with a 200 status code and return an array of objects, including the 'username', 'name' and 'avatar_url' properties", () => {

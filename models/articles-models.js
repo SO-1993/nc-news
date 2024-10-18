@@ -1,6 +1,6 @@
 const db = require("../db/connection");
 
-// fetchArticles()
+// fetchArticles() //
 exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
   const validSortColumns = [
     "author",
