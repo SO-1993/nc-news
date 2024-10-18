@@ -199,6 +199,29 @@ describe("GET /api/articles", () => {
       });
   });
 
+  test("should return a 200 status code and an array of article objects, sorted by author in ascending order", () => {
+    return request(app)
+      .get("/api/articles?sort_by=author&order=asc")
+      .expect(200)
+      .then((response) => {
+        const { articles } = response.body;
+
+        expect(Array.isArray(articles)).toBe(true);
+        expect(articles).toBeSortedBy("author", { ascending: true });
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("article_id");
+          expect(article).toHaveProperty("author");
+          expect(article).toHaveProperty("title");
+          expect(article).toHaveProperty("topic");
+          expect(article).toHaveProperty("created_at");
+          expect(article).toHaveProperty("votes");
+          expect(article).toHaveProperty("article_img_url");
+          expect(article).toHaveProperty("comment_count");
+        });
+      });
+  });
+
   test("should return a 200 status code and an array of article objects, sorted by date (created_at) in descending order if specified", () => {
     return request(app)
       .get("/api/articles?order=desc")
