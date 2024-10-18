@@ -29,7 +29,7 @@ exports.createCommentForArticle = (article_id, username, body) => {
       [article_id, username, body]
     )
     .then((result) => {
-      return result.rows[0]; // return the newly created comment
+      return result.rows[0];
     });
 };
 

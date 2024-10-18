@@ -28,7 +28,7 @@ exports.getArticleById = (req, res, next) => {
     .catch(next);
 };
 
-// updateArticleById()
+// updateArticleById() //
 exports.updateArticleById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;

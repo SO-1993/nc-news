@@ -22,7 +22,6 @@ describe("GET /api/articles", () => {
         const { articles } = response.body;
 
         expect(Array.isArray(articles)).toBe(true);
-
         articles.forEach((article) => {
           expect(article).toHaveProperty("author");
           expect(article).toHaveProperty("title");
@@ -174,7 +173,7 @@ describe("PATCH /api/articles/:article_id", () => {
   });
 });
 
-/////////////////////// GET /api/articles TESTS (sorting queries) ///////////////////////
+///////////////////// GET /api/articles TESTS (sorting queries) ///////////////////////
 
 describe("GET /api/articles", () => {
   test("should return a 200 status code and an array of article objects, sorted by topic specified in the query", () => {

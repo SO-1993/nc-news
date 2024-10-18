@@ -10,7 +10,7 @@ afterAll(() => {
   return db.end();
 });
 
-/////////////////////// GET /api TESTS  ///////////////////////
+/////////////////////// GET /api TESTS  /////////////////////
 
 describe("GET /api", () => {
   test("should respond with a 200 status and available endpoints", () => {

@@ -28,7 +28,7 @@ app.get("/api/articles/:article_id", getArticleById);
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.get("/api/users", getUsers);
 
-// POST routing
+// POST routing //
 app.post("/api/articles/:article_id/comments", postCommentsByArticleId);
 
 // PATCH routing
