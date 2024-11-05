@@ -9,7 +9,7 @@ const { getApiEndpoints } = require("./controllers/api-controller");
 const {
   getArticles,
   getArticleById,
-} = require("./controllers/articapiles-controller");
+} = require("./controllers/articles-controller");
 const {
   getCommentsByArticleId,
   postCommentsByArticleId,
