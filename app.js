@@ -1,9 +1,7 @@
 const express = require("express");
+
 const app = express();
 const cors = require("cors");
-
-app.use(cors());
-app.use(express.json());
 
 // controller imports
 const { getTopics } = require("./controllers/topics-controller");
@@ -11,7 +9,7 @@ const { getApiEndpoints } = require("./controllers/api-controller");
 const {
   getArticles,
   getArticleById,
-} = require("./controllers/articles-controller");
+} = require("./controllers/articapiles-controller");
 const {
   getCommentsByArticleId,
   postCommentsByArticleId,
@@ -21,6 +19,9 @@ const {
   deleteCommentByCommentId,
 } = require("./controllers/comments-controller");
 const { getUsers } = require("./controllers/users-controller");
+
+app.use(cors());
+app.use(express.json());
 
 // GET routing
 app.get("/api/topics", getTopics);
